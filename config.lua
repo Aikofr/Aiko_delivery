@@ -1,7 +1,7 @@
 Config = {}
 
-Config.Framework = 'qbcore' -- 'qbcore', 'esx'
-Config.Target = false       -- 'ox_target', 'qb-target',
+Config.Framework = 'qbcore' -- 'standalone', 'qbcore', 'esx', 'ox'
+Config.Target = 'none'      -- 'ox_target', 'qb-target', 'polyzone', 'ox_lib', 'none'
 
 Config.BossNPC = {
     model = "a_m_m_farmer_01",

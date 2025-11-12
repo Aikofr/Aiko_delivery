@@ -1,3 +1,5 @@
+local QBCore = exports['qb-core']:GetCoreObject()
+
 local function MainBlip()
     bossBlip = AddBlipForCoord(Config.BossNPC.coords.x, Config.BossNPC.coords.y, Config.BossNPC.coords.z)
     SetBlipSprite(bossBlip, Config.Blips.boss.sprite)
@@ -31,6 +33,30 @@ local function SpawnBossPed()
 
     SetModelAsNoLongerNeeded(model)
 end
+
+Citizen.CreateThread(function()
+    while true do
+        local sleep = 1000
+        local playerPed = PlayerPedId()
+        local playerCoords = GetEntityCoords(playerPed)
+        local bossCoords = vector3(Config.BossNPC.coords.x, Config.BossNPC.coords.y, Config.BossNPC.coords.z)
+        local distance = #(playerCoords - bossCoords)
+
+        if distance <= 20 then
+            sleep = 0
+            DrawMarker(2, bossCoords.x, bossCoords.y, bossCoords.z + 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15,
+                255, 255, 255, 200, false, false, false, true, false, false, false)
+
+            if distance <= 5 then
+                QBCore.Functions.DrawText3D(bossCoords.x, bossCoords.y, bossCoords.z + 1.0, "[E] Commencer le travail")
+                if IsControlJustReleased(0, 38) then -- E
+                    print('test01')
+                end
+            end
+        end
+        Wait(sleep)
+    end
+end)
 
 AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() == resourceName then
