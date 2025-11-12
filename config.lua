@@ -6,11 +6,11 @@ Config.BossNPC = {
     scenario = "WORLD_HUMAN_CLIPBOARD"
 }
 
-Config.Blip = {
+Config.Blips = {
     boss = {
         sprite = 478,
         color = 5,
         scale = 0.8,
-        label = "Livraison"
+        label = "Livraison - Emploi"
     }
 }

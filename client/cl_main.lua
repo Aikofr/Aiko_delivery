@@ -1,5 +1,13 @@
 local function MainBlip()
-    -- ici futur blip
+    bossBlip = AddBlipForCoord(Config.BossNPC.coords.x, Config.BossNPC.coords.y, Config.BossNPC.coords.z)
+    SetBlipSprite(bossBlip, Config.Blips.boss.sprite)
+    SetBlipDisplay(bossBlip, 4)
+    SetBlipScale(bossBlip, Config.Blips.boss.scale)
+    SetBlipColour(bossBlip, Config.Blips.boss.color)
+    SetBlipAsShortRange(bossBlip, true)
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString(Config.Blips.boss.label)
+    EndTextCommandSetBlipName(bossBlip)
 end
 
 local function SpawnBossPed()
