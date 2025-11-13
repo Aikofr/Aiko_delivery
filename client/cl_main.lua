@@ -13,8 +13,34 @@ local function MainBlip()
     EndTextCommandSetBlipName(bossBlip)
 end
 
-RegisterNetEvent('aiko_delivery:client:MainMenu', function()
-    print('hey manu')
+RegisterNetEvent('aiko_delivery:client:mainMenu', function()
+    exports["qb-menu"]:openMenu({
+        {
+            header = "< Go Back",
+        },
+        {
+            header = "Démarrer la mission",
+            params = {
+                event = "aiko_delivery:client:startJob",
+
+            }
+        },
+        {
+            header = "Terminer la mission",
+            params = {
+                event = "aiko_delivery:client:endJob",
+
+            }
+        },
+    })
+end)
+
+RegisterNetEvent('aiko_delivery:client:startJob', function()
+    TriggerEvent('QBCore:Notify', 'Start job')
+end)
+
+RegisterNetEvent('aiko_delivery:client:endJob', function()
+    TriggerEvent('QBCore:Notify', 'end job')
 end)
 
 local function listerInteract()
@@ -22,7 +48,7 @@ local function listerInteract()
     CreateThread(function()
         while listenZone do
             if IsControlJustReleased(0, 38) then
-                TriggerEvent('aiko_delivery:client:MainMenu')
+                TriggerEvent('aiko_delivery:client:mainMenu')
             end
             Wait(1)
         end
