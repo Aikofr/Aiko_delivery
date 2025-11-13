@@ -1,4 +1,5 @@
 local QBCore = exports['qb-core']:GetCoreObject()
+local listenZone = false
 
 local function MainBlip()
     bossBlip = AddBlipForCoord(Config.BossNPC.coords.x, Config.BossNPC.coords.y, Config.BossNPC.coords.z)
@@ -10,6 +11,42 @@ local function MainBlip()
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString(Config.Blips.boss.label)
     EndTextCommandSetBlipName(bossBlip)
+end
+
+RegisterNetEvent('aiko_delivery:client:MainMenu', function()
+    print('hey manu')
+end)
+
+local function listerInteract()
+    listenZone = true
+    CreateThread(function()
+        while listenZone do
+            if IsControlJustReleased(0, 38) then
+                TriggerEvent('aiko_delivery:client:MainMenu')
+            end
+            Wait(1)
+        end
+    end)
+end
+
+local function Interaction()
+    local method = Config.Target
+
+    if method == false then
+        local bossZones = BoxZone:Create(Config.BossNPC.coords, 3.0, 3.0, {
+            name = "boss_npc",
+            debugPoly = true
+        })
+        bossZones:onPlayerInOut(function(inside)
+            if inside then
+                exports['qb-core']:DrawText('[E] Parler avec le patron', 'right')
+                listerInteract()
+            else
+                exports['qb-core']:HideText()
+                listenZone = false
+            end
+        end)
+    end
 end
 
 local function SpawnBossPed()
@@ -32,31 +69,8 @@ local function SpawnBossPed()
     end
 
     SetModelAsNoLongerNeeded(model)
+    Interaction()
 end
-
-Citizen.CreateThread(function()
-    while true do
-        local sleep = 1000
-        local playerPed = PlayerPedId()
-        local playerCoords = GetEntityCoords(playerPed)
-        local bossCoords = vector3(Config.BossNPC.coords.x, Config.BossNPC.coords.y, Config.BossNPC.coords.z)
-        local distance = #(playerCoords - bossCoords)
-
-        if distance <= 20 then
-            sleep = 0
-            DrawMarker(2, bossCoords.x, bossCoords.y, bossCoords.z + 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15,
-                255, 255, 255, 200, false, false, false, true, false, false, false)
-
-            if distance <= 5 then
-                QBCore.Functions.DrawText3D(bossCoords.x, bossCoords.y, bossCoords.z + 1.0, "[E] Commencer le travail")
-                if IsControlJustReleased(0, 38) then -- E
-                    print('test01')
-                end
-            end
-        end
-        Wait(sleep)
-    end
-end)
 
 AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() == resourceName then
