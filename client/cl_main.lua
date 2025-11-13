@@ -1,5 +1,8 @@
-local QBCore = exports['qb-core']:GetCoreObject()
-local listenZone = false
+local QBCore         = exports['qb-core']:GetCoreObject()
+local listenZone     = false
+local isWorking      = false
+local boxesCollected = 0
+local vehSpawn       = nil
 
 local function MainBlip()
     bossBlip = AddBlipForCoord(Config.BossNPC.coords.x, Config.BossNPC.coords.y, Config.BossNPC.coords.z)
@@ -12,36 +15,6 @@ local function MainBlip()
     AddTextComponentString(Config.Blips.boss.label)
     EndTextCommandSetBlipName(bossBlip)
 end
-
-RegisterNetEvent('aiko_delivery:client:mainMenu', function()
-    exports["qb-menu"]:openMenu({
-        {
-            header = "< Go Back",
-        },
-        {
-            header = "Démarrer la mission",
-            params = {
-                event = "aiko_delivery:client:startJob",
-
-            }
-        },
-        {
-            header = "Terminer la mission",
-            params = {
-                event = "aiko_delivery:client:endJob",
-
-            }
-        },
-    })
-end)
-
-RegisterNetEvent('aiko_delivery:client:startJob', function()
-    TriggerEvent('QBCore:Notify', 'Start job')
-end)
-
-RegisterNetEvent('aiko_delivery:client:endJob', function()
-    TriggerEvent('QBCore:Notify', 'end job')
-end)
 
 local function listerInteract()
     listenZone = true
@@ -97,6 +70,65 @@ local function SpawnBossPed()
     SetModelAsNoLongerNeeded(model)
     Interaction()
 end
+
+local function spawnVehicle()
+    local vehModel = GetHashKey(Config.Vehicle.name)
+    RequestModel(vehModel)
+    while not HasModelLoaded(vehModel) do
+        Wait(10)
+    end
+
+    local vehicle = CreateVehicle(vehModel, Config.Vehicle.location, true, false)
+    print(QBCore.Functions.GetPlate(vehicle))
+    exports['LegacyFuel']:SetFuel(vehicle, 100.0)
+    SetEntityAsMissionEntity(vehicle, true, true)
+    SetVehicleDoorsLocked(vehicle, 1)
+    TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(vehicle))
+
+    vehSpawn = vehicle
+
+    SetModelAsNoLongerNeeded(vehModel)
+end
+
+RegisterNetEvent('aiko_delivery:client:mainMenu', function()
+    exports["qb-menu"]:openMenu({
+        {
+            header = "< Go Back",
+        },
+        {
+            header = "Démarrer la mission",
+            params = {
+                event = "aiko_delivery:client:startJob",
+
+            }
+        },
+        {
+            header = "Terminer la mission",
+            params = {
+                event = "aiko_delivery:client:endJob",
+
+            }
+        },
+    })
+end)
+
+RegisterNetEvent('aiko_delivery:client:startJob', function()
+    if isWorking then
+        QBCore.Functions.Notify("Tu travailles déjà !", "error")
+        return
+    end
+    isWorking = true
+    if vehSpawn then
+        QBCore.Functions.Notify("Un véhicule est deja dehors !", "error")
+    else
+        spawnVehicle()
+    end
+end)
+
+RegisterNetEvent('aiko_delivery:client:endJob', function()
+    TriggerEvent('QBCore:Notify', 'end job')
+    isWorking = false
+end)
 
 AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() == resourceName then
