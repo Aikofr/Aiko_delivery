@@ -5,7 +5,7 @@ local boxesCollected = 0
 local vehSpawn       = nil
 
 local function MainBlip()
-    bossBlip = AddBlipForCoord(Config.BossNPC.coords.x, Config.BossNPC.coords.y, Config.BossNPC.coords.z)
+    local bossBlip = AddBlipForCoord(Config.BossNPC.coords.x, Config.BossNPC.coords.y, Config.BossNPC.coords.z)
     SetBlipSprite(bossBlip, Config.Blips.boss.sprite)
     SetBlipDisplay(bossBlip, 4)
     SetBlipScale(bossBlip, Config.Blips.boss.scale)
@@ -22,8 +22,9 @@ local function listerInteract()
         while listenZone do
             if IsControlJustReleased(0, 38) then
                 TriggerEvent('aiko_delivery:client:mainMenu')
+                listenZone = false
             end
-            Wait(1)
+            Wait(50)
         end
     end)
 end
@@ -34,7 +35,7 @@ local function Interaction()
     if method == false then
         local bossZones = BoxZone:Create(Config.BossNPC.coords, 3.0, 3.0, {
             name = "boss_npc",
-            debugPoly = true
+            debugPoly = Config.Debug
         })
         bossZones:onPlayerInOut(function(inside)
             if inside then
@@ -90,6 +91,11 @@ local function spawnVehicle()
     SetModelAsNoLongerNeeded(vehModel)
 end
 
+local function CreateDeliveryPoints()
+    print('coucou')
+    print(json.encode(Config.BoxGroups))
+end
+
 RegisterNetEvent('aiko_delivery:client:mainMenu', function()
     exports["qb-menu"]:openMenu({
         {
@@ -123,6 +129,9 @@ RegisterNetEvent('aiko_delivery:client:startJob', function()
     else
         spawnVehicle()
     end
+
+    QBCore.Functions.Notify("🚚 Mission démarrée!", "success")
+    CreateDeliveryPoints()
 end)
 
 RegisterNetEvent('aiko_delivery:client:endJob', function()
