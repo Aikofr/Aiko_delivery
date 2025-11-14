@@ -1,10 +1,11 @@
 local QBCore         = exports['qb-core']:GetCoreObject()
-local bossZone
+
+local bossZone       = nil
 local listenZone     = false
 local isWorking      = false
 local boxesCollected = 0
 local vehSpawn       = nil
-local bossPed
+local bossPed        = nil
 
 
 local function MainBlip()
@@ -27,6 +28,8 @@ local function Interaction()
         debugPoly = Config.Debug
     })
 
+    if bossZone == nil then return end
+
     bossZone:onPlayerInOut(function(inside)
         listenZone = inside
 
@@ -35,6 +38,7 @@ local function Interaction()
             CreateThread(function()
                 while listenZone do
                     if IsControlJustReleased(0, 38) then
+                        exports['qb-core']:HideText()
                         TriggerEvent('aiko_delivery:client:mainMenu')
                     end
                     Wait(10)
@@ -63,7 +67,7 @@ local function SpawnBossPed()
     SetEntityAsMissionEntity(ped, true, true)
 
     if Config.BossNPC.scenario then
-        TaskStartScenarioInPlace(ped, "WORLD_HUMAN_CLIPBOARD", 0, true)
+        TaskStartScenarioInPlace(ped, Config.BossNPC.scenario, 0, true)
     end
 
     SetModelAsNoLongerNeeded(model)
