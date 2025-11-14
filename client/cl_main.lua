@@ -1,9 +1,11 @@
 local QBCore         = exports['qb-core']:GetCoreObject()
+local bossZone
 local listenZone     = false
 local isWorking      = false
 local boxesCollected = 0
 local vehSpawn       = nil
 local bossPed
+
 
 local function MainBlip()
     local bossBlip = AddBlipForCoord(Config.BossNPC.coords.x, Config.BossNPC.coords.y, Config.BossNPC.coords.z)
@@ -17,37 +19,31 @@ local function MainBlip()
     EndTextCommandSetBlipName(bossBlip)
 end
 
-local function listerInteract()
-    listenZone = true
-    CreateThread(function()
-        while listenZone do
-            if IsControlJustReleased(0, 38) then
-                TriggerEvent('aiko_delivery:client:mainMenu')
-                listenZone = false
-            end
-            Wait(50)
+local function Interaction()
+    if bossZone then return end
+
+    bossZone = BoxZone:Create(Config.BossNPC.coords, 3.0, 3.0, {
+        name = "boss_npc",
+        debugPoly = Config.Debug
+    })
+
+    bossZone:onPlayerInOut(function(inside)
+        listenZone = inside
+
+        if inside then
+            exports['qb-core']:DrawText('[E] Parler avSec le patron', 'right')
+            CreateThread(function()
+                while listenZone do
+                    if IsControlJustReleased(0, 38) then
+                        TriggerEvent('aiko_delivery:client:mainMenu')
+                    end
+                    Wait(10)
+                end
+            end)
+        else
+            exports['qb-core']:HideText()
         end
     end)
-end
-
-local function Interaction()
-    local method = Config.Target
-
-    if method == false then
-        local bossZones = BoxZone:Create(Config.BossNPC.coords, 3.0, 3.0, {
-            name = "boss_npc",
-            debugPoly = Config.Debug
-        })
-        bossZones:onPlayerInOut(function(inside)
-            if inside then
-                exports['qb-core']:DrawText('[E] Parler avec le patron', 'right')
-                listerInteract()
-            else
-                exports['qb-core']:HideText()
-                listenZone = false
-            end
-        end)
-    end
 end
 
 local function SpawnBossPed()
