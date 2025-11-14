@@ -131,14 +131,15 @@ RegisterNetEvent('aiko_delivery:client:startJob', function()
     TriggerEvent('aiko_delivery:client:startMission')
 end)
 
-RegisterNetEvent('aiko_delivery:client:endJob', function()
-    TriggerEvent('QBCore:Notify', 'end job')
-    isWorking = false
-    print(vehSpawn)
-    DeleteVehicle(vehSpawn)
-    vehSpawn = nil
-    TriggerEvent('aiko_delivery:client:stopMission')
-end)
+RegisterNetEvent('aiko_delivery:client:endJob',
+    function() --A changer ici, j'ai l'impression qu'on a beaucoup de répétition avec 'aiko_delivery:client:stopMission' qui font la meme chose
+        TriggerEvent('QBCore:Notify', 'end job')
+        isWorking = false
+        print(vehSpawn)
+        DeleteVehicle(vehSpawn)
+        vehSpawn = nil
+        TriggerEvent('aiko_delivery:client:stopMission')
+    end)
 
 -- Cleanup on resource stop
 AddEventHandler('onResourceStop', function(res)
