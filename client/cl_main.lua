@@ -3,6 +3,7 @@ local listenZone     = false
 local isWorking      = false
 local boxesCollected = 0
 local vehSpawn       = nil
+local bossPed
 
 local function MainBlip()
     local bossBlip = AddBlipForCoord(Config.BossNPC.coords.x, Config.BossNPC.coords.y, Config.BossNPC.coords.z)
@@ -50,6 +51,7 @@ local function Interaction()
 end
 
 local function SpawnBossPed()
+    if bossPed and DoesEntityExist(bossPed) then return end
     local model = Config.BossNPC.model
 
     RequestModel(model)
@@ -69,6 +71,7 @@ local function SpawnBossPed()
     end
 
     SetModelAsNoLongerNeeded(model)
+    bossPed = ped
     Interaction()
 end
 
