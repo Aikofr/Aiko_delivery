@@ -84,6 +84,7 @@ local function spawnVehicle()
     exports['LegacyFuel']:SetFuel(vehicle, 100.0)
     SetEntityAsMissionEntity(vehicle, true, true)
     SetVehicleDoorsLocked(vehicle, 1)
+    SetVehicleOnGroundProperly(vehicle)
     TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(vehicle))
 
     vehSpawn = vehicle
