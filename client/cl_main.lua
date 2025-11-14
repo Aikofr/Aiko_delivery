@@ -31,7 +31,7 @@ local function Interaction()
         listenZone = inside
 
         if inside then
-            exports['qb-core']:DrawText('[E] Parler avSec le patron', 'right')
+            exports['qb-core']:DrawText('[E] Parler avec le patron', 'right')
             CreateThread(function()
                 while listenZone do
                     if IsControlJustReleased(0, 38) then
@@ -78,7 +78,8 @@ local function spawnVehicle()
         Wait(10)
     end
 
-    local vehicle = CreateVehicle(vehModel, Config.Vehicle.location, true, false)
+    local loc = Config.Vehicle.location
+    local vehicle = CreateVehicle(vehModel, loc.x, loc.y, loc.z, loc.w, true, false)
     print(QBCore.Functions.GetPlate(vehicle))
     exports['LegacyFuel']:SetFuel(vehicle, 100.0)
     SetEntityAsMissionEntity(vehicle, true, true)
