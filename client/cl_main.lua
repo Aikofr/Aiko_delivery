@@ -96,11 +96,6 @@ local function spawnVehicle()
     SetModelAsNoLongerNeeded(vehModel)
 end
 
-local function CreateDeliveryPoints()
-    print('coucou')
-    print(json.encode(Config.BoxGroups))
-end
-
 RegisterNetEvent('aiko_delivery:client:mainMenu', function()
     exports["qb-menu"]:openMenu({
         {
@@ -134,14 +129,19 @@ RegisterNetEvent('aiko_delivery:client:startJob', function()
     else
         spawnVehicle()
     end
-
-    QBCore.Functions.Notify("🚚 Mission démarrée!", "success")
-    CreateDeliveryPoints()
+    TriggerEvent('aiko_delivery:client:startMission')
 end)
 
 RegisterNetEvent('aiko_delivery:client:endJob', function()
     TriggerEvent('QBCore:Notify', 'end job')
     isWorking = false
+end)
+
+-- Cleanup on resource stop
+AddEventHandler('onResourceStop', function(res)
+    if res == GetCurrentResourceName() then
+        TriggerEvent('aiko_delivery:client:stopMission')
+    end
 end)
 
 AddEventHandler('onResourceStart', function(resourceName)

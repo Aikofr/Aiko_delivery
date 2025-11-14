@@ -13,8 +13,10 @@ client_scripts {
     '@PolyZone/client.lua',
     '@PolyZone/BoxZone.lua',
     '@PolyZone/CircleZone.lua', --A commenter si pas utilisé.
-    'client/cl_main.lua'
+    'client/cl_main.lua',
+    'client/cl_missions.lua'
 }
+
 server_script {
     'server/sv_main.lua'
 }
