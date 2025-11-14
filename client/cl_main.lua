@@ -1,11 +1,10 @@
-local QBCore         = exports['qb-core']:GetCoreObject()
+local QBCore     = exports['qb-core']:GetCoreObject()
 
-local bossZone       = nil
-local listenZone     = false
-local isWorking      = false
-local boxesCollected = 0
-local vehSpawn       = nil
-local bossPed        = nil
+local bossZone   = nil
+local listenZone = false
+local isWorking  = false
+local vehSpawn   = nil
+local bossPed    = nil
 
 
 local function MainBlip()
@@ -135,6 +134,10 @@ end)
 RegisterNetEvent('aiko_delivery:client:endJob', function()
     TriggerEvent('QBCore:Notify', 'end job')
     isWorking = false
+    print(vehSpawn)
+    DeleteVehicle(vehSpawn)
+    vehSpawn = nil
+    TriggerEvent('aiko_delivery:client:stopMission')
 end)
 
 -- Cleanup on resource stop
